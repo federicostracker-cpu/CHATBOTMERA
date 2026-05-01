@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MERA · Dashboard Chatbot RR.HH.</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0A0A0C;--ink2:#1C1C20;--ink3:#2E2E34;
+  --mist:#F7F6F2;--mist2:#EFEDE8;--mist3:#E0DDD5;
+  --stone:#B8B4AA;--stone2:#8A8680;--stone3:#6C6960;
+  --gold:#C9A84C;--gold2:#E8C96A;--gold-dim:rgba(201,168,76,0.1);
+  --green:#2D6A4F;--green-bg:#D8F3DC;
+  --red:#7B1D1D;--red-bg:#FFE4E4;
+  --blue:#0D3B6E;--blue-bg:#DDE8F5;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --mono:'DM Mono',monospace;
+}
+html,body{min-height:100%;background:var(--mist);color:var(--ink);font-family:var(--sans);font-size:14px;-webkit-font-smoothing:antialiased}
+
+.header{background:var(--ink);padding:20px 32px;display:flex;align-items:center;justify-content:space-between}
+.header-left{display:flex;align-items:center;gap:14px}
+.header-logo{font-family:var(--mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+.header-title{font-family:var(--serif);font-size:20px;font-weight:600;color:#fff}
+.header-title em{font-style:italic;color:var(--gold2)}
+.header-meta{font-size:11px;color:var(--stone2);font-family:var(--mono)}
+.refresh-btn{padding:7px 14px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:var(--stone);font-family:var(--mono);font-size:11px;cursor:pointer;transition:all .15s}
+.refresh-btn:hover{background:rgba(255,255,255,0.14);color:#fff}
+
+.content{padding:28px 32px;max-width:1200px;margin:0 auto}
+
+/* STAT CARDS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.stat{background:#fff;border:1px solid var(--mist3);border-radius:14px;padding:18px 20px}
+.stat-label{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--stone2);margin-bottom:8px}
+.stat-value{font-size:28px;font-weight:500;color:var(--ink);line-height:1}
+.stat-sub{font-size:11px;color:var(--stone3);margin-top:5px;font-weight:300}
+
+/* PANELS */
+.panels{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.panel{background:#fff;border:1px solid var(--mist3);border-radius:14px;overflow:hidden}
+.panel-header{padding:14px 18px;border-bottom:1px solid var(--mist3);display:flex;align-items:center;justify-content:space-between}
+.panel-title{font-size:13.5px;font-weight:500}
+
+/* BARRAS */
+.bar-list{padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.bar-item{display:flex;align-items:center;gap:10px}
+.bar-label{font-size:12px;font-weight:300;color:var(--ink);width:160px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-track{flex:1;height:7px;background:var(--mist2);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;background:var(--ink);transition:width .5s}
+.bar-count{font-family:var(--mono);font-size:11px;color:var(--stone2);width:28px;text-align:right;flex-shrink:0}
+
+/* TABLA DERIVADAS */
+.tabla{width:100%;border-collapse:collapse}
+.tabla th{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--stone2);padding:10px 16px;text-align:left;border-bottom:1px solid var(--mist3);background:var(--mist2);font-weight:400}
+.tabla td{padding:10px 16px;font-size:12.5px;font-weight:300;border-bottom:1px solid var(--mist3);vertical-align:top}
+.tabla tr:last-child td{border-bottom:none}
+.tabla tr:hover td{background:#FAFAF7}
+
+/* GRAFICO DIARIO */
+.chart-area{padding:16px 18px}
+.bars-chart{display:flex;align-items:flex-end;gap:4px;height:80px;margin-bottom:6px}
+.bar-day{flex:1;background:var(--ink);border-radius:3px 3px 0 0;min-height:3px;position:relative;cursor:default;transition:opacity .15s}
+.bar-day:hover{opacity:.7}
+.chart-labels{display:flex;gap:4px}
+.chart-lbl{flex:1;font-family:var(--mono);font-size:8px;color:var(--stone3);text-align:center;overflow:hidden}
+
+/* CHIPS */
+.chip-ok{display:inline-block;font-size:10px;padding:2px 8px;border-radius:12px;background:var(--green-bg);color:var(--green);font-family:var(--mono)}
+.chip-esc{display:inline-block;font-size:10px;padding:2px 8px;border-radius:12px;background:var(--red-bg);color:var(--red);font-family:var(--mono)}
+
+.empty{text-align:center;padding:30px;color:var(--stone3);font-size:13px}
+
+.loader{text-align:center;padding:60px;color:var(--stone2);font-family:var(--mono);font-size:12px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div>
+      <div class="header-logo">MERA Solutions · RR.HH.</div>
+      <div class="header-title">Dashboard <em>Chatbot</em></div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <div class="header-meta" id="last-update">Cargando...</div>
+    <button class="refresh-btn" onclick="loadData()">↻ Actualizar</button>
+  </div>
+</div>
+
+<div class="content">
+  <div id="main-content">
+    <div class="loader">Cargando datos...</div>
+  </div>
+</div>
+
+<script>
+const TEMAS = {
+  alta_laboral: 'Alta laboral',
+  obra_social: 'Obra social',
+  ausencia_medica: 'Ausencia médica',
+  vacaciones: 'Vacaciones',
+  licencias: 'Licencias',
+  maternidad: 'Maternidad',
+  sanciones: 'Sanciones',
+  despido: 'Despido',
+  renuncia: 'Renuncia',
+  art_accidente: 'ART / Accidente',
+  certificado: 'Certificado',
+  recibo_sueldo: 'Recibo de sueldo',
+  periodo_prueba: 'Período de prueba',
+  presentismo: 'Presentismo',
+  otro: 'Otro'
+};
+
+const pass = new URLSearchParams(window.location.search).get('pass') || '';
+
+async function loadData() {
+  document.getElementById('last-update').textContent = 'Actualizando...';
+  try {
+    const r = await fetch(`/api/stats?pass=${pass}`);
+    if (!r.ok) { document.getElementById('main-content').innerHTML = '<div class="loader">⚠ Sin acceso. Verificá la contraseña en la URL.</div>'; return; }
+    const data = await r.json();
+    render(data);
+    document.getElementById('last-update').textContent = 'Actualizado: ' + new Date().toLocaleTimeString('es-AR', {hour:'2-digit',minute:'2-digit'});
+  } catch(e) {
+    document.getElementById('main-content').innerHTML = `<div class="loader">Error: ${e.message}</div>`;
+  }
+}
+
+function render(data) {
+  const { total, porTema, porDia, derivadas } = data;
+  const totalDerivadas = derivadas?.length || 0;
+  const pctDerivadas = total > 0 ? Math.round((totalDerivadas / total) * 100) : 0;
+
+  // Tema más consultado
+  const temaTop = Object.entries(porTema || {}).sort((a,b)=>b[1]-a[1])[0];
+  const temaTopLabel = temaTop ? (TEMAS[temaTop[0]] || temaTop[0]) : '—';
+
+  // Días con datos
+  const diasEntries = Object.entries(porDia || {}).sort((a,b)=>a[0].localeCompare(b[0])).slice(-14);
+  const maxDia = Math.max(...diasEntries.map(e=>e[1]), 1);
+
+  // Temas ordenados
+  const temasOrdenados = Object.entries(porTema || {}).sort((a,b)=>b[1]-a[1]);
+  const maxTema = temasOrdenados[0]?.[1] || 1;
+
+  document.getElementById('main-content').innerHTML = `
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label">Total consultas</div>
+        <div class="stat-value">${total.toLocaleString('es-AR')}</div>
+        <div class="stat-sub">desde el inicio</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Derivadas a RR.HH.</div>
+        <div class="stat-value">${totalDerivadas}</div>
+        <div class="stat-sub">${pctDerivadas}% del total</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Tema más consultado</div>
+        <div class="stat-value" style="font-size:18px;margin-top:4px">${temaTopLabel}</div>
+        <div class="stat-sub">${temaTop?.[1] || 0} consultas</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Días con actividad</div>
+        <div class="stat-value">${diasEntries.length}</div>
+        <div class="stat-sub">últimas 2 semanas</div>
+      </div>
+    </div>
+
+    <div class="panels">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Consultas por tema</div>
+        </div>
+        <div class="bar-list">
+          ${temasOrdenados.length === 0
+            ? '<div class="empty">Sin datos todavía</div>'
+            : temasOrdenados.map(([tema, count]) => `
+              <div class="bar-item">
+                <div class="bar-label">${TEMAS[tema] || tema}</div>
+                <div class="bar-track"><div class="bar-fill" style="width:${Math.round((count/maxTema)*100)}%"></div></div>
+                <div class="bar-count">${count}</div>
+              </div>`).join('')}
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Consultas por día (últimas 2 semanas)</div>
+        </div>
+        <div class="chart-area">
+          ${diasEntries.length === 0
+            ? '<div class="empty">Sin datos todavía</div>'
+            : `
+            <div class="bars-chart">
+              ${diasEntries.map(([dia, count]) => `
+                <div class="bar-day" style="height:${Math.round((count/maxDia)*80)}px" title="${dia}: ${count} consultas"></div>
+              `).join('')}
+            </div>
+            <div class="chart-labels">
+              ${diasEntries.map(([dia]) => `
+                <div class="chart-lbl">${dia.slice(5)}</div>
+              `).join('')}
+            </div>`}
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-bottom:20px">
+      <div class="panel-header">
+        <div class="panel-title">Consultas derivadas a RR.HH. (últimas 50)</div>
+        <span class="chip-esc">Requirieron atención humana</span>
+      </div>
+      ${!derivadas || derivadas.length === 0
+        ? '<div class="empty">Sin derivaciones registradas</div>'
+        : `<table class="tabla">
+            <thead><tr><th>Fecha</th><th>Pregunta del colaborador</th></tr></thead>
+            <tbody>
+              ${derivadas.map(d => `
+                <tr>
+                  <td style="white-space:nowrap;font-family:var(--mono);font-size:11px;color:var(--stone2)">${new Date(d.created_at).toLocaleDateString('es-AR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</td>
+                  <td>${d.pregunta}</td>
+                </tr>`).join('')}
+            </tbody>
+          </table>`}
+    </div>
+  `;
+}
+
+loadData();
+setInterval(loadData, 60000);
+</script>
+</body>
+</html>
