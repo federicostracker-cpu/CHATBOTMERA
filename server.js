@@ -4,7 +4,6 @@ const path = require('path');
 
 const app = express();
 app.use(express.json());
-app.use(express.static('public'));
 
 const SYSTEM = `Sos el Asistente de RR.HH. de MERA Solutions, empresa de contact center con sedes en Olivos y Parque Patricios, Argentina.
 
@@ -55,7 +54,6 @@ ESTILO: Español rioplatense (vos/te). Tono cálido y directo. Respuestas concis
 app.post('/api/chat', async (req, res) => {
   try {
     const { messages } = req.body;
-
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -71,24 +69,19 @@ app.post('/api/chat', async (req, res) => {
         ]
       })
     });
-
     const data = await response.json();
-
-    if (!response.ok) {
-      return res.status(response.status).json({ error: data.error?.message || 'Error de API' });
-    }
-
+    if (!response.ok) return res.status(response.status).json({ error: data.error?.message || 'Error de API' });
     const reply = data.choices?.[0]?.message?.content || 'No pude procesar tu consulta.';
     res.json({ reply });
-
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
+// Servir index.html desde la raíz
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`MERA Chatbot corriendo en http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`Corriendo en http://localhost:${PORT}`));
